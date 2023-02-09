@@ -1,0 +1,71 @@
+version: '3'
+
+services:
+  nginx:
+    container_name: npt_nginx
+    image: nginx
+    ports:
+      - 80:80
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+    depends_on:
+      - spring
+      - node
+    environment:
+      - TZ="Asia/Seoul"
+
+  mysql:
+    container_name: npt_mysql
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_HOST: "%"
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - mysql-volume:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    command:
+      - "mysqld"
+      - "--character-set-server=utf8mb4"
+      - "--collation-server=utf8mb4_unicode_ci"
+
+  redis:
+    container_name: npt_redis
+    image: redis:latest
+    command: redis-server --port 6379
+    ports:
+      - "6379:6379"
+
+  spring:
+    container_name: npt_spring_backend
+    image: ${DOCKER_USERNAME}/${DOCKER_SPRING_REPO}
+    restart: on-failure
+    expose:
+      - 8080
+    env_file:
+      - .env
+    depends_on:
+      - mysql
+      - redis
+    environment:
+      - TZ=Asia/Seoul
+
+  node:
+    container_name: npt_node_backend
+    image: ${DOCKER_USERNAME}/${DOCKER_NODE_REPO}
+    restart: on-failure
+    expose:
+      - 3000
+    env_file:
+      - .env
+    depends_on:
+      - mysql
+      - redis
+    environment:
+      - TZ=Asia/Seoul
+
+volumes:
+  mysql-volume: {}
