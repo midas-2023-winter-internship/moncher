@@ -1,0 +1,6 @@
+[submodule "backend_node"]
+	path = backend_node
+	url = https://github.com/midas-2023-winter-internship/backend_node
+[submodule "goose"]
+	path = goose
+	url = https://github.com/midas-2023-winter-internship/goose
