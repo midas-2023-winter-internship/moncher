@@ -1,0 +1,39 @@
+name: Deploy to production
+
+on:
+  repository_dispatch:
+    types: [ deploy_event ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to prod
+        uses: appleboy/ssh-action@master
+        id: deploy-prod
+        with:
+          host: ${{ secrets.HOST_PROD }}
+          username: ubuntu
+          key: ${{ secrets.PRIVATE_KEY }}
+          envs: GITHUB_SHA
+          script: |
+            sudo docker rm -f $(docker ps -qa)
+            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_NODE_REPO }}
+            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_SPRING_REPO }}
+            
+            cd backend
+            
+            rm -rf .env
+            touch .env
+            echo NODE_ENV=production >> .env
+            echo DB_NAME=${{ secrets.DB_NAME }} >> .env
+            echo DB_USER=${{ secrets.DB_USER }} >> .env
+            echo DB_PASSWORD=${{ secrets.DB_PASSWORD }} >> .env
+            echo JWT_SECRET=${{ secrets.JWT_SECRET }} >> .env
+            echo DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }} >> .env
+            echo DOCKER_NODE_REPO=${{ secrets.DOCKER_NODE_REPO }} >> .env
+            echo DOCKER_SPRING_REPO=${{ secrets.DOCKER_SPRING_REPO }} >> .env
+
+            docker-compose up -d
+            docker image prune -f
