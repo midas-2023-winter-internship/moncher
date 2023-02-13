@@ -66,6 +66,9 @@ services:
       - redis
     environment:
       - TZ=Asia/Seoul
+    volumes:
+      - images-volume:/var/app/uploads
 
 volumes:
   mysql-volume: {}
+  images-volume: {}
