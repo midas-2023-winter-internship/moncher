@@ -38,6 +38,8 @@ jobs:
             echo DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }} >> .env
             echo DOCKER_NODE_REPO=${{ secrets.DOCKER_NODE_REPO }} >> .env
             echo DOCKER_SPRING_REPO=${{ secrets.DOCKER_SPRING_REPO }} >> .env
+            echo REDIS_HOST=${{ secrets.REDIS_HOST }} >> .env
+            echo REDIS_PORT=${{ secrets.REDIS_PORT }} >> .env
 
             docker-compose up -d
             docker image prune -f
