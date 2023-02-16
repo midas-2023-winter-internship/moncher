@@ -69,6 +69,14 @@ services:
     volumes:
       - images-volume:/var/app/uploads
 
+  certbot:
+    image: certbot/certbot
+    container_name: certbot_service
+    volumes:
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+
 volumes:
   mysql-volume: {}
   images-volume: {}
