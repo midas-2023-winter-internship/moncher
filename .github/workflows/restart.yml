@@ -36,6 +36,8 @@ jobs:
             echo DOCKER_SPRING_REPO=${{ secrets.DOCKER_SPRING_REPO }} >> .env
             echo REDIS_HOST=${{ secrets.REDIS_HOST }} >> .env
             echo REDIS_PORT=${{ secrets.REDIS_PORT }} >> .env
+            echo SERVER_ADDRESS=${{ secrets.SERVER_ADDRESS }} >> .env
+            echo CRYPTO_KEY=${{ secrets.CRYPTO_KEY }} >> .env
 
             docker-compose up -d
             docker image prune -f
